@@ -1,0 +1,9 @@
+﻿  main.cpp
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(238,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(239,70): warning C4305: '-=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(240,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(241,70): warning C4305: '-=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(242,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(243,70): warning C4305: '-=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(282,77): warning C4101: 'scaleMatrix': unreferenced local variable
+  lab2_assignment.vcxproj -> H:\WORKSHOP\Opengl\Lab2\lab2_assignment\x64\Debug\lab2_assignment.exe
