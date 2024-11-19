@@ -1,9 +1,15 @@
 ﻿  main.cpp
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(238,70): warning C4305: '+=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(239,70): warning C4305: '-=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(240,70): warning C4305: '+=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(241,70): warning C4305: '-=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(242,70): warning C4305: '+=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(243,70): warning C4305: '-=': truncation from 'double' to 'float'
-H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(282,77): warning C4101: 'scaleMatrix': unreferenced local variable
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(206,89): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(209,82): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(210,81): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(211,93): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(212,92): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(245,93): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(245,58): warning C4305: 'argument': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(298,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(299,70): warning C4305: '-=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(300,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(301,70): warning C4305: '-=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(302,70): warning C4305: '+=': truncation from 'double' to 'float'
+H:\WORKSHOP\Opengl\Lab2\lab2_assignment\lab2_assignment\main.cpp(303,70): warning C4305: '-=': truncation from 'double' to 'float'
   lab2_assignment.vcxproj -> H:\WORKSHOP\Opengl\Lab2\lab2_assignment\x64\Debug\lab2_assignment.exe
