@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -33,6 +34,9 @@ void drawCube(Shader shaderProgram, unsigned int VAO, glm::mat4 parentTrans,
     float rotX = 0.0f, float rotY = 0.0f, float rotZ = 0.0f,
     float scX = 1.0f, float scY = 1.0f, float scZ = 1.0f,
     glm::vec4 color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)); // Default color is green
+
+void generateCylinderVertices(std::vector<float>& vertices, std::vector<unsigned int>& indices, int segments, float height, float radius);
+
 
 
 
@@ -62,6 +66,7 @@ BasicCamera basic_camera(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f, glm::vec3(0.0f, 1.0
 float deltaTime = 0.0f;    // time between current frame and last frame
 float lastFrame = 0.0f;
 float fanRotateAngle_Y = 0.0f;
+bool isFanRotating = true;
 
 int main()
 {
@@ -184,6 +189,39 @@ int main()
         glDrawArrays(GL_LINES, 0, 6);
         glBindVertexArray(0);
 
+        std::vector<float> cylinderVertices;
+        std::vector<unsigned int> cylinderIndices;
+        int segments = 36;
+        float height = 0.3f;
+        float radius = 0.05f;
+
+        // Generate cylinder vertices and indices
+        generateCylinderVertices(cylinderVertices, cylinderIndices, segments, height, radius);
+
+        // Create buffers and arrays
+        unsigned int cylinderVAO, cylinderVBO, cylinderEBO;
+        glGenVertexArrays(1, &cylinderVAO);
+        glGenBuffers(1, &cylinderVBO);
+        glGenBuffers(1, &cylinderEBO);
+
+        glBindVertexArray(cylinderVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, cylinderVBO);
+        glBufferData(GL_ARRAY_BUFFER, cylinderVertices.size() * sizeof(float), &cylinderVertices[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cylinderEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, cylinderIndices.size() * sizeof(unsigned int), &cylinderIndices[0], GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+
+
         glm::mat4 parentTrans = glm::mat4(1.0f);
 
         // Apply a translation to move the entire table
@@ -202,23 +240,23 @@ int main()
         // Draw Cube
         drawCube(ourShader, VAO, parentTrans, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.0, 1.0, 1.0, glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-        // Drawing floor (light gray color)
+        // Drawing floor
         drawCube(ourShader, VAO, parentTrans, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 12.0, 0.05, 12.0, glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 
-        // Drawing walls (light beige color)
+        // Drawing walls
         drawCube(ourShader, VAO, parentTrans, -3.0, 1.5, 0.0f, 0.0f, 0.0f, 0.0f, 0.05, 6.0, 12.0, glm::vec4(0.9f, 0.85f, 0.75f, 1.0f)); // wall
         drawCube(ourShader, VAO, parentTrans, 3.0, 1.5, 0.0f, 0.0f, 0.0f, 0.0f, 0.05, 6.0, 12.0, glm::vec4(0.9f, 0.85f, 0.75f, 1.0f)); // wall
         drawCube(ourShader, VAO, parentTrans, 0.0f, 1.5, -3.0, 0.0f, 0.0f, 0.0f, 12.0, 6.0, 0.05, glm::vec4(0.9f, 0.85f, 0.75f, 1.0f)); // wall
         drawCube(ourShader, VAO, parentTrans, 0.0f, 1.5, 4.0, 0.0f, 0.0f, 0.0f, 12.0, 6.0, 0.05, glm::vec4(0.9f, 0.85f, 0.75f, 1.0f)); // wall
 
-        // Drawing Table (wood-like color for the surface, metallic gray for the legs)
+        // Drawing Table
         drawCube(ourShader, VAO, parentTrans, 2.0f, 0.5f, 2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.2f, 2.0f, glm::vec4(0.72f, 0.52f, 0.04f, 1.0f)); // wooden surface
         drawCube(ourShader, VAO, parentTrans, 1.6f, 0.25f, 1.6f, 0.0f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)); // metallic leg
         drawCube(ourShader, VAO, parentTrans, 2.4f, 0.25f, 2.4f, 0.0f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)); // metallic leg
         drawCube(ourShader, VAO, parentTrans, 2.4f, 0.25f, 1.6f, 0.0f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)); // metallic leg
         drawCube(ourShader, VAO, parentTrans, 1.6f, 0.25f, 2.4f, 0.0f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f)); // metallic leg
 
-        // Drawing Chair (dark wood-like color, darker legs, fabric backrest)
+        // Drawing Chair
         drawCube(ourShader, VAO, parentTrans, 1.5f, 0.25f, 2.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.2f, 1.0f, glm::vec4(0.54f, 0.27f, 0.07f, 1.0f)); // wooden seat
         drawCube(ourShader, VAO, parentTrans, 1.3f, 0.1f, 1.8f, 0.0f, 0.0f, 0.0f, 0.2f, 0.5f, 0.2f, glm::vec4(0.4f, 0.26f, 0.13f, 1.0f)); // darker leg
         drawCube(ourShader, VAO, parentTrans, 1.65f, 0.1f, 2.15f, 0.0f, 0.0f, 0.0f, 0.2f, 0.5f, 0.2f, glm::vec4(0.4f, 0.26f, 0.13f, 1.0f)); // darker leg
@@ -226,14 +264,14 @@ int main()
         drawCube(ourShader, VAO, parentTrans, 1.3f, 0.1f, 2.15f, 0.0f, 0.0f, 0.0f, 0.2f, 0.5f, 0.2f, glm::vec4(0.4f, 0.26f, 0.13f, 1.0f)); // darker leg
         drawCube(ourShader, VAO, parentTrans, 1.30f, 0.4f, 2.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.8f, 1.0f, glm::vec4(0.9f, 0.75f, 0.55f, 1.0f)); // fabric backrest
 
-        // Drawing DoubleSitSofa (dark green fabric with gray legs)
+        // Drawing DoubleSitSofa 
         drawCube(ourShader, VAO, parentTrans, -2.0f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f, 0.99f, 0.1f, 2.99f, glm::vec4(0.0f, 0.39f, 0.3f, 1.0f)); // surface
         drawCube(ourShader, VAO, parentTrans, -2.25f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 1.5f, 2.99f, glm::vec4(0.0f, 0.39f, 0.3f, 1.0f)); // backrest
         drawCube(ourShader, VAO, parentTrans, -2.0f, 0.19f, -0.7f, 0.0f, 0.0f, 0.0f, 1.0f, 0.75f, 0.2f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // leg
         drawCube(ourShader, VAO, parentTrans, -2.0f, 0.19f, 0.7f, 0.0f, 0.0f, 0.0f, 1.0f, 0.75f, 0.2f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // leg
         drawCube(ourShader, VAO, parentTrans, -1.8f, 0.125f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.5f, 3.0f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // leg
 
-        // Drawing SingleSitSofa (teal blue fabric with gray legs)
+        // Drawing SingleSitSofa
         drawCube(ourShader, VAO, parentTrans, 0.0f, 0.25f, 2.0f, 0.0f, 90.0f, 0.0f, 0.9f, 0.1f, 1.499f, glm::vec4(0.0f, 0.55f, 0.55f, 1.0f)); // surface
         drawCube(ourShader, VAO, parentTrans, 0.0f, 0.25f, 2.25f, 0.0f, 90.0f, 0.0f, 0.1f, 1.5f, 1.499f, glm::vec4(0.0f, 0.55f, 0.55f, 1.0f)); // backrest
         drawCube(ourShader, VAO, parentTrans, 0.4f, 0.19f, 2.0f, 0.0f, 90.0f, 0.0f, 1.0f, 0.75f, 0.2f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // leg
@@ -244,34 +282,49 @@ int main()
         // Drawing TV
         drawCube(ourShader, VAO, parentTrans, 0.0f, 1.5, -2.99, 0.0f, 0.0f, 0.0f, 3.0, 1.0, 0.05, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)); // TV
 
+        // Stand
+        drawCube(ourShader, VAO, parentTrans, -1.0f, 0.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.01f, 3.5f, 0.01f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // long stand
+        drawCube(ourShader, VAO, parentTrans, -1.0f, 0.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // base
+
         
         // Animate the fan blades
         // Fan rotation logic
-        fanRotateAngle_Y += deltaTime * 100.0f;  // Increase the rotation angle to animate fan blades
-        if (fanRotateAngle_Y > 360.0f)
-            fanRotateAngle_Y -= 360.0f;
+
+        if (isFanRotating) {
+            fanRotateAngle_Y += deltaTime * 100.0f;  // Increase the rotation angle to animate fan blades
+            if (fanRotateAngle_Y > 360.0f)
+                fanRotateAngle_Y -= 360.0f;
+        }
 
         // Create a transformation matrix for the fan
         glm::mat4 fanTransform = glm::translate(parentTrans, glm::vec3(0.0f, 2.5f, 0.0f)); // Move fan above the floor
         fanTransform = glm::rotate(fanTransform, glm::radians(fanRotateAngle_Y), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the fan around Y-axis
 
         // Draw Central Rod
-        drawCube(ourShader, VAO, fanTransform, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 1.0f, 0.1f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // Rod
+        drawCube(ourShader, VAO, fanTransform, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.2f, 0.5f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // Rod
+        drawCube(ourShader, VAO, parentTrans, 0.0f, 2.65f, 0.0f, 0.0f, 0.0f, 0.0f, 0.05f, 0.5f, 0.05f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)); // hanger
 
         // Draw the 3 blades, using fanTransform as the parent transform
         glm::mat4 bladeTransform;
 
         // Blade 1 - Color Red
         bladeTransform = glm::rotate(fanTransform, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // No rotation, Blade 1 starts at 0 degrees
-        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.702f, 1.0f, 1.0f, 1.0f));
 
         // Blade 2 - Color Green
         bladeTransform = glm::rotate(fanTransform, glm::radians(120.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Rotate 120 degrees around Y-axis
-        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.702f, 1.0f, 1.0f, 1.0f));
 
         // Blade 3 - Color Blue
         bladeTransform = glm::rotate(fanTransform, glm::radians(240.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Rotate 240 degrees around Y-axis
-        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
+        drawCube(ourShader, VAO, bladeTransform, 0.5f, 0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 2.0f, 0.05f, 0.2f, glm::vec4(0.702f, 1.0f, 1.0f, 1.0f));
+
+        // Draw Cylinder
+        glm::mat4 cylinderModel = glm::translate(parentTrans, glm::vec3(-1.0f, 1.0f, 2.0f)); // Position the cylinder as needed
+        ourShader.setMat4("model", cylinderModel);
+        glBindVertexArray(cylinderVAO);
+        glDrawElements(GL_TRIANGLES, cylinderIndices.size(), GL_UNSIGNED_INT, 0);
+
 
 
         // Swap buffers and poll IO events
@@ -333,6 +386,16 @@ void processInput(GLFWwindow* window)
         basic_camera.ProcessRotation('L', deltaTime);  // Roll counter-clockwise
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
         basic_camera.ProcessRotation('R', deltaTime);  // Roll clockwise
+
+    // Toggle fan rotation with 'G' key
+    static bool gPressedLastFrame = false;
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && !gPressedLastFrame) {
+        isFanRotating = !isFanRotating;
+        gPressedLastFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE) {
+        gPressedLastFrame = false;
+    }
 }
 
 // Framebuffer size callback
@@ -374,6 +437,74 @@ void drawCube(Shader shaderProgram, unsigned int VAO, glm::mat4 parentTrans,
     // Draw the cube
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+}
+
+void generateCylinderVertices(std::vector<float>& vertices, std::vector<unsigned int>& indices, int segments, float height, float radius) {
+    // Top center vertex
+    vertices.push_back(0.0f);
+    vertices.push_back(height / 2.0f);
+    vertices.push_back(0.0f);
+    vertices.push_back(0.702f); // r
+    vertices.push_back(1.0f); // g
+    vertices.push_back(1.0f); // b
+
+    // Bottom center vertex
+    vertices.push_back(0.0f);
+    vertices.push_back(-height / 2.0f);
+    vertices.push_back(0.0f);
+    vertices.push_back(0.702f); // r
+    vertices.push_back(1.0f); // g
+    vertices.push_back(1.0f); // b
+
+    // Generate vertices around the top and bottom circles
+    for (int i = 0; i <= segments; i++) {
+        float angle = 2.0f * 3.1416 * i / segments;
+        float x = radius * cos(angle);
+        float z = radius * sin(angle);
+
+        // Top circle vertex
+        vertices.push_back(x);
+        vertices.push_back(height / 2.0f);
+        vertices.push_back(z);
+        vertices.push_back(0.702f); // r
+        vertices.push_back(1.0f); // g
+        vertices.push_back(1.0f); // b
+
+        // Bottom circle vertex
+        vertices.push_back(x);
+        vertices.push_back(-height / 2.0f);
+        vertices.push_back(z);
+        vertices.push_back(0.702f); // r
+        vertices.push_back(1.0f); // g
+        vertices.push_back(1.0f); // b
+    }
+
+    // Generate indices for the top and bottom circles
+    for (int i = 0; i < segments; i++) {
+        // Top circle
+        indices.push_back(0);
+        indices.push_back(2 + 2 * i);
+        indices.push_back(2 + 2 * ((i + 1) % segments));
+
+        // Bottom circle
+        indices.push_back(1);
+        indices.push_back(3 + 2 * i);
+        indices.push_back(3 + 2 * ((i + 1) % segments));
+
+        // Side triangles
+        int top1 = 2 + 2 * i;
+        int top2 = 2 + 2 * ((i + 1) % segments);
+        int bottom1 = top1 + 1;
+        int bottom2 = top2 + 1;
+
+        indices.push_back(top1);
+        indices.push_back(bottom1);
+        indices.push_back(top2);
+
+        indices.push_back(bottom1);
+        indices.push_back(bottom2);
+        indices.push_back(top2);
+    }
 }
 
 
